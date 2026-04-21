@@ -384,7 +384,8 @@ float Battery::computeRemainingTime(float current_a)
 
 	_vehicle_status_was_fw = _vehicle_status_is_fw;
 
-	if (_armed && PX4_ISFINITE(current_a)) {
+	// current_a = -1 means invalid current measurement, do not update filter in this case
+	if (_armed && PX4_ISFINITE(current_a) && fabsf(current_a + 1.f) > FLT_EPSILON) {
 		// For FW only update when we are in level flight
 		if (!_vehicle_status_is_fw || ((hrt_absolute_time() - _flight_phase_estimation_sub.get().timestamp) < 2_s
 					       && _flight_phase_estimation_sub.get().flight_phase == flight_phase_estimation_s::FLIGHT_PHASE_LEVEL)) {
